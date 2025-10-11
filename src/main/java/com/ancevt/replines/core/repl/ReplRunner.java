@@ -18,10 +18,11 @@
 package com.ancevt.replines.core.repl;
 
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import com.ancevt.replines.core.argument.Arguments;
+import com.ancevt.replines.core.repl.annotation.ReplCommand;
+import com.ancevt.replines.core.repl.annotation.ReplExecute;
+
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -170,7 +171,7 @@ public class ReplRunner {
     private Executor executor;
     private boolean shutdownExecutorOnStop = false;
 
-    private String commandFilterPrefix = "/";
+    private String commandFilterPrefix = "";
 
     private final List<Function<String, String>> outputFilters = new ArrayList<>();
 
@@ -187,10 +188,37 @@ public class ReplRunner {
         this.registry = registry;
     }
 
+    /**
+     * Sets the command filter prefix for the REPL.
+     * <p>
+     * When a prefix is defined, only commands that start with this prefix
+     * will be recognized and executed by the {@link com.ancevt.replines.core.repl.ReplRunner}.
+     * This can be useful when integrating the REPL into a larger system
+     * where user input may include lines that are not intended as commands.
+     * </p>
+     *
+     * <p>Example:</p>
+     * <pre>{@code
+     * repl.setCommandFilterPrefix("/");
+     * // Only lines starting with "/" will be treated as commands:
+     * // "/help" -> executes "help"
+     * // "hello world" -> ignored
+     * }</pre>
+     *
+     * @param commandFilterPrefix the prefix string used to identify REPL commands;
+     *                            an empty string means that all input lines are treated as commands
+     */
     public void setCommandFilterPrefix(String commandFilterPrefix) {
         this.commandFilterPrefix = commandFilterPrefix;
     }
 
+    /**
+     * Returns the currently configured command filter prefix.
+     *
+     * @return the command filter prefix string, or an empty string
+     *         if all input lines are treated as commands
+     * @see #setCommandFilterPrefix(String)
+     */
     public String getCommandFilterPrefix() {
         return commandFilterPrefix;
     }
@@ -319,7 +347,7 @@ public class ReplRunner {
      */
     public void execute(String commandLine) throws UnknownCommandException {
         String[] tokens = commandLine.trim().split("\\s+");
-        if (tokens.length == 0) return;
+        if (commandLine.isEmpty() || tokens.length == 0) return;
 
         String commandWord = tokens[0];
 
@@ -417,6 +445,13 @@ public class ReplRunner {
     // Some dev sandbox
     public static void main(String[] args) throws IOException {
         ReplRunner repl = ReplRunner.builder()
+                .withColorizer()
+                .withDefaultCommands()
+                .withCommandFilterPrefix("")
+                .withErrorHandler((r, e) -> {
+                    r.println("<red>Error: " + e.getMessage());
+                    e.printStackTrace(new PrintStream(r.getOutputStream()));
+                })
                 .configure(reg -> {
                     reg.command("/test")
                             .description("Prints each argument with index")
@@ -426,12 +461,16 @@ public class ReplRunner {
                                     r.println(i + "\t" + a.getElements()[i]);
                                 }
                             })
-                            .build();
+                            .register();
+
+                    reg.command("/testerr")
+                            .action((r, a) -> {
+                                int i = 2 / 0;
+                            })
+                            .register();
+                    reg.registerClass(MyCommand.class);
                 })
-                .withColorizer()
-                .withDefaultCommands()
-                .withOutput(System.out)
-                .withRegistry(new CommandRegistry())
+
                 .build();
 
 
@@ -446,7 +485,7 @@ public class ReplRunner {
                 })
                 .result((r, result) -> r.println("Answer: " + result))
                 .async()
-                .build();
+                .register();
 
 
         repl.start(System.in, System.out);
@@ -454,6 +493,19 @@ public class ReplRunner {
         System.out.println("END");
     }
 
+    @ReplCommand(name = "/sum", description = "Adds two integers")
+    private static class MyCommand {
 
+        @ReplExecute()
+        public void execute(ReplRunner repl, Arguments args) {
+            repl.println(args.next(int.class) + args.next(int.class));
+        }
+
+        @ReplCommand(name = "/command2")
+        private static void myCommand2(ReplRunner repl, Arguments args) {
+            repl.println("Executed " + args.getSource());
+        }
+
+    }
 
 }

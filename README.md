@@ -89,7 +89,7 @@ With **Replines**, you don’t need to glue together multiple libraries — ever
 <dependency>
   <groupId>com.ancevt.replines</groupId>
   <artifactId>replines-core</artifactId>
-  <version>1.2.2</version>
+  <version>1.3.0</version>
 </dependency>
 ```
 

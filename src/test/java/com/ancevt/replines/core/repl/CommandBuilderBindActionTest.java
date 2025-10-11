@@ -42,7 +42,7 @@ class CommandBuilderBindActionTest {
                     assertEquals(42, parsed.number);
                     return "OK-" + parsed.text;
                 })
-                .build();
+                .register();
 
         ReplRunner dummy = new ReplRunner() {
             public void println(String s) { /* no-op */ }
@@ -63,7 +63,7 @@ class CommandBuilderBindActionTest {
                 .action(EchoArgs.class, (repl, parsed) -> {
                     output.append(parsed.text).append(":").append(parsed.number);
                 })
-                .build();
+                .register();
 
         ReplRunner dummy = new ReplRunner() {
             public void println(String s) { /* no-op */ }

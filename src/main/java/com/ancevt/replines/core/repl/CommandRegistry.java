@@ -37,7 +37,7 @@ public class CommandRegistry {
 
     /**
      * Starts definition of a new command using a builder.
-     * The command will be automatically registered after {@link Command.Builder#build()} is called.
+     * The command will be automatically registered after {@link Command.Builder#register()} is called.
      *
      * @param words one or more command words (aliases)
      * @param <T>   type of the command result
@@ -46,8 +46,8 @@ public class CommandRegistry {
     public <T> Command.Builder<T> command(String... words) {
         return new Command.Builder<T>(words) {
             @Override
-            public Command<T> build() {
-                Command<T> cmd = super.build();
+            public Command<T> register() {
+                Command<T> cmd = super.register();
                 CommandRegistry.this.register(cmd);
                 return cmd;
             }
@@ -56,7 +56,7 @@ public class CommandRegistry {
 
     /**
      * Starts definition of a new command using a builder.
-     * The command will be automatically registered after {@link Command.Builder#build()} is called.
+     * The command will be automatically registered after {@link Command.Builder#register()} is called.
      *
      * @param words list of command words (aliases)
      * @param <T>   type of the command result
@@ -65,8 +65,8 @@ public class CommandRegistry {
     public <T> Command.Builder<T> command(List<String> words) {
         return new Command.Builder<T>(words) {
             @Override
-            public Command<T> build() {
-                Command<T> cmd = super.build();
+            public Command<T> register() {
+                Command<T> cmd = super.register();
                 CommandRegistry.this.register(cmd);
                 return cmd;
             }

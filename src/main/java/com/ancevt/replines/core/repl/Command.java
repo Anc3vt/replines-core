@@ -507,7 +507,7 @@ public class Command<R> {
          *
          * @return new {@link Command} instance
          */
-        public Command<R> build() {
+        public Command<R> register() {
             Command<R> command = new Command<>(commandWords, description, action, resultAction);
             command.setAsync(async);
             return command;
@@ -520,7 +520,7 @@ public class Command<R> {
          * @param registry registry to register the command in
          */
         public void register(CommandRegistry registry) {
-            registry.register(build());
+            registry.register(register());
         }
     }
 

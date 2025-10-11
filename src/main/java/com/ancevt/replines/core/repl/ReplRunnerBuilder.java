@@ -184,13 +184,41 @@ public class ReplRunnerBuilder {
     private final List<Consumer<CommandRegistry>> registryActions = new ArrayList<>();
     private boolean useColorizer;
     private ReplErrorHandler errorHandler;
-    private String commandFilterPrefix = "/";
+    private String commandFilterPrefix = "";
 
 
+    /**
+     * Sets a prefix that will be used to filter input lines recognized as REPL commands.
+     * <p>
+     * When this prefix is defined, the {@link com.ancevt.replines.core.repl.ReplRunner}
+     * built by this builder will only execute lines that start with the given prefix.
+     * All other lines will be ignored.
+     * </p>
+     *
+     * <p>Example:</p>
+     * <pre>{@code
+     * ReplRunner repl = ReplRunner.builder()
+     *     .withCommandFilterPrefix("/")
+     *     .withDefaultCommands()
+     *     .build();
+     *
+     * // The following line will execute the "/help" command:
+     * repl.execute("/help");
+     *
+     * // This line will be ignored because it does not start with "/":
+     * repl.execute("hello");
+     * }</pre>
+     *
+     * @param prefix the command prefix to match at the beginning of each input line;
+     *               an empty string means all input lines are treated as commands
+     * @return this builder instance for method chaining
+     * @see com.ancevt.replines.core.repl.ReplRunner#setCommandFilterPrefix(String)
+     */
     public ReplRunnerBuilder withCommandFilterPrefix(String prefix) {
         this.commandFilterPrefix = prefix;
         return this;
     }
+
 
     /**
      * Sets the input stream for the REPL.
@@ -355,13 +383,13 @@ public class ReplRunnerBuilder {
                 .action((r, a) -> {
                     r.println("<g>" + r.getRegistry().formattedCommandList());
                 })
-                .build();
+                .register();
 
         registry.command("/exit")
                 .description("Exit the REPL")
                 .action((r, a) -> {
                     r.stop();
                 })
-                .build();
+                .register();
     }
 }

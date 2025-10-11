@@ -21,16 +21,16 @@ package com.ancevt.replines.core;
 import com.ancevt.replines.core.argument.Arguments;
 import com.ancevt.replines.core.repl.CommandRegistry;
 import com.ancevt.replines.core.repl.ReplRunner;
+import com.ancevt.replines.core.repl.UnknownCommandException;
 import com.ancevt.replines.core.repl.annotation.ReplCommand;
 import com.ancevt.replines.core.repl.annotation.ReplExecute;
-import com.ancevt.replines.core.repl.UnknownCommandException;
 import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 public class AnnotationCommandLoaderTest {
 

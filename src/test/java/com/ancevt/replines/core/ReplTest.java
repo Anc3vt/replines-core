@@ -82,7 +82,7 @@ public class ReplTest {
                     repl.println("pong");
                     return 0;
                 })
-                .build();
+                .register();
 
         ReplRunner repl = new ReplRunner(registry);
         ByteArrayInputStream in = new ByteArrayInputStream("/ping\n".getBytes());
@@ -102,7 +102,7 @@ public class ReplTest {
                 .action((repl, args) -> {
                     repl.stop();
                 })
-                .build();
+                .register();
 
         ReplRunner repl = new ReplRunner(registry);
         ByteArrayInputStream in = new ByteArrayInputStream("exit\nping\n".getBytes());
@@ -143,7 +143,7 @@ public class ReplTest {
                 .action((repl, args) -> {
                     repl.println("hello");
                 })
-                .build();
+                .register();
 
         String output = registry.formattedCommandList();
         assertTrue(output.contains("hello"));
@@ -153,8 +153,8 @@ public class ReplTest {
     @Test
     public void testCommandRegistryPrefixFilter() {
         CommandRegistry registry = new CommandRegistry();
-        registry.command("start").action((r, a) -> {}).build();
-        registry.command("stop").action((r, a) -> {}).build();
+        registry.command("start").action((r, a) -> {}).register();
+        registry.command("stop").action((r, a) -> {}).register();
 
         String filtered = registry.formattedCommandList("sta");
         assertTrue(filtered.contains("start"));

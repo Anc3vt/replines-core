@@ -99,7 +99,7 @@ public final class ColorizeFilter {
         return enabled;
     }
 
-    private static final Pattern TAG_PATTERN = Pattern.compile("<[^>]+>");
+    private static final Pattern TAG_PATTERN = Pattern.compile("<[^>]*>");
 
     public String colorize(String input) {
         if (!enabled) {
